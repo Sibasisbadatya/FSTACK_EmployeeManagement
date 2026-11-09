@@ -24,13 +24,13 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-    @PostMapping
+    @PostMapping("/addEmployee")
     public ResponseEntity<Employee> addEmployee(@RequestBody @Valid EmployeeDTO employee) {
         Employee savedEmployee = employeeService.addEmployee(employee);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEmployee);
     }
 
-    @PutMapping
+    @PutMapping("/updateEmployee")
     public ResponseEntity<Employee> updateEmployee(@RequestBody @Valid EmployeeDTO employee) {
         Employee updatedEmployee = employeeService.updateEmployee(employee);
         return ResponseEntity.status(HttpStatus.CREATED).body(updatedEmployee);
@@ -38,7 +38,7 @@ public class EmployeeController {
 
 
 
-    @GetMapping
+    @GetMapping("/getAllEmployee")
     public ResponseEntity<Page<Employee>> getAllEmployee(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,

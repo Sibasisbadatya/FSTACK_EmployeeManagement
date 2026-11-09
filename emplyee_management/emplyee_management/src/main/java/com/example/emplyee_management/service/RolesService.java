@@ -15,10 +15,10 @@ public class RolesService {
         this.roleRepository = roleRepository;
     }
 
-    public Role addRoles(RoleDTO roleDto){
+    public Role addRoles(RoleDTO roleDto) {
         Role role = new Role();
         role.setName(roleDto.getName());
-        roleRepository.save(role);
+        return roleRepository.save(role);
     }
 
 }
