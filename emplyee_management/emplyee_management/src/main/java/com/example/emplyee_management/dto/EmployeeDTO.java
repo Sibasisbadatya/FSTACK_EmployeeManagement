@@ -1,6 +1,7 @@
 package com.example.emplyee_management.dto;
 
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,9 +13,12 @@ public class EmployeeDTO {
 
     private String name;
 
+    @NotNull
     private String email;
 
     private String password;
 
     private String departmentName;
+
+    private Long version;
 }

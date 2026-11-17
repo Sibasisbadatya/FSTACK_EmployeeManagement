@@ -10,8 +10,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -37,9 +39,23 @@ public class EmployeeController {
     }
 
 
-
     @GetMapping("/getAllEmployee")
     public ResponseEntity<Page<Employee>> getAllEmployee(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "true") boolean ascending
+    ) {
+        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Employee> employees = employeeService.getAllEmployee(pageable);
+        return ResponseEntity.ok()
+                .body(employees);
+    }
+
+    @GetMapping(value = "/stream/getAllEmployee",
+            produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public ResponseEntity<Page<Employee>> streamAllEmployee(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "id") String sortBy,

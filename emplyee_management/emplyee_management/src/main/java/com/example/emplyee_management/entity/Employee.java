@@ -12,13 +12,18 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     private String name;
-    @Column(nullable = false, unique = true)
+
+    @Column(nullable = false, unique = true,updatable = false)
     private String email;
 
     @Column(nullable = false)
     private String password;
+
+    @Version
+    private Long version;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "department_id",nullable = false)
