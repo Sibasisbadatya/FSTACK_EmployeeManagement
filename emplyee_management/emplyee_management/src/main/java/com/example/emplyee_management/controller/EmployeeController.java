@@ -2,7 +2,7 @@ package com.example.emplyee_management.controller;
 
 
 import com.example.emplyee_management.dto.EmployeeDTO;
-import com.example.emplyee_management.entity.Employee;
+import com.example.emplyee_management.dto.EmployeeResponseDTO;
 import com.example.emplyee_management.service.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -27,20 +27,20 @@ public class EmployeeController {
     }
 
     @PostMapping("/addEmployee")
-    public ResponseEntity<Employee> addEmployee(@RequestBody @Valid EmployeeDTO employee) {
-        Employee savedEmployee = employeeService.addEmployee(employee);
+    public ResponseEntity<EmployeeResponseDTO> addEmployee(@RequestBody @Valid EmployeeDTO employee) {
+        EmployeeResponseDTO savedEmployee = EmployeeResponseDTO.from(employeeService.addEmployee(employee));
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEmployee);
     }
 
     @PutMapping("/updateEmployee")
-    public ResponseEntity<Employee> updateEmployee(@RequestBody @Valid EmployeeDTO employee) {
-        Employee updatedEmployee = employeeService.updateEmployee(employee);
+    public ResponseEntity<EmployeeResponseDTO> updateEmployee(@RequestBody @Valid EmployeeDTO employee) {
+        EmployeeResponseDTO updatedEmployee = EmployeeResponseDTO.from(employeeService.updateEmployee(employee));
         return ResponseEntity.status(HttpStatus.CREATED).body(updatedEmployee);
     }
 
 
     @GetMapping("/getAllEmployee")
-    public ResponseEntity<Page<Employee>> getAllEmployee(
+    public ResponseEntity<Page<EmployeeResponseDTO>> getAllEmployee(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -48,14 +48,14 @@ public class EmployeeController {
     ) {
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Employee> employees = employeeService.getAllEmployee(pageable);
-        return ResponseEntity.ok()
-                .body(employees);
+        Page<EmployeeResponseDTO> employees = employeeService.getAllEmployee(pageable)
+                .map(EmployeeResponseDTO::from);
+        return ResponseEntity.ok().body(employees);
     }
 
     @GetMapping(value = "/stream/getAllEmployee",
             produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<Page<Employee>> streamAllEmployee(
+    public ResponseEntity<Page<EmployeeResponseDTO>> streamAllEmployee(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -63,9 +63,9 @@ public class EmployeeController {
     ) {
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Employee> employees = employeeService.getAllEmployee(pageable);
-        return ResponseEntity.ok()
-                .body(employees);
+        Page<EmployeeResponseDTO> employees = employeeService.getAllEmployee(pageable)
+                .map(EmployeeResponseDTO::from);
+        return ResponseEntity.ok().body(employees);
     }
 
 }

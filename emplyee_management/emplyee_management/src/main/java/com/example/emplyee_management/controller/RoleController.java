@@ -2,7 +2,7 @@ package com.example.emplyee_management.controller;
 
 
 import com.example.emplyee_management.dto.RoleDTO;
-import com.example.emplyee_management.entity.Role;
+import com.example.emplyee_management.dto.RoleResponseDTO;
 import com.example.emplyee_management.service.RolesService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,8 +21,8 @@ public class RoleController {
     }
 
     @PostMapping
-    public ResponseEntity<Role> addRole(@Valid @RequestBody RoleDTO roleDTO){
-        Role role =rolesService.addRoles(roleDTO);
+    public ResponseEntity<RoleResponseDTO> addRole(@Valid @RequestBody RoleDTO roleDTO){
+        RoleResponseDTO role = RoleResponseDTO.from(rolesService.addRoles(roleDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(role);
     }
 

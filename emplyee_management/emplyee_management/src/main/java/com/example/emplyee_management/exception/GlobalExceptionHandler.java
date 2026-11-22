@@ -1,7 +1,6 @@
 package com.example.emplyee_management.exception;
 
-import com.example.emplyee_management.dto.ValidationExceptionResponseDTO;
-import jakarta.servlet.http.HttpServletRequest;
+import com.example.emplyee_management.dto.GlobalResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +18,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationExceptionResponseDTO> handleMethodArguementException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+    public ResponseEntity<GlobalResponseDTO<Map<String, String>>> handleMethodArguementException(MethodArgumentNotValidException ex) {
         log.info("Error in Controller {}", ex.getMessage());
         Map<String, String> fieldError = new HashMap<>();
         ex.getBindingResult()
@@ -29,24 +27,20 @@ public class GlobalExceptionHandler {
                     fieldError.put(error.getField(), error.getDefaultMessage());
                 });
 
-        ValidationExceptionResponseDTO dto = new ValidationExceptionResponseDTO(
-                LocalDateTime.now(),
-                HttpStatus.CONFLICT.value(),
-                HttpStatus.CONFLICT.getReasonPhrase(),
-                request.getRequestURI(),
-                fieldError
-        );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(dto);
+                .body(GlobalResponseDTO.of(HttpStatus.BAD_REQUEST, "Validation failed", fieldError));
     }
 
     @ExceptionHandler({
             ObjectOptimisticLockingFailureException.class,
             OptimisticLockingFailureException.class
     })
-    public ResponseEntity<String> handleOptimisticLock(Exception ex) {
+    public ResponseEntity<GlobalResponseDTO<Void>> handleOptimisticLock(Exception ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body("Employee was modified by another user. "
-                        + "Please refresh and try again.");
+                .body(GlobalResponseDTO.of(
+                        HttpStatus.CONFLICT,
+                        "Employee was modified by another user. Please refresh and try again.",
+                        null
+                ));
     }
 }

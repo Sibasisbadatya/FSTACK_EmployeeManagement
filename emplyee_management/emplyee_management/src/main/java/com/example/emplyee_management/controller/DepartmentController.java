@@ -2,9 +2,10 @@ package com.example.emplyee_management.controller;
 
 
 import com.example.emplyee_management.dto.DepartmentDTO;
-import com.example.emplyee_management.entity.Department;
+import com.example.emplyee_management.dto.DepartmentResponseDTO;
 import com.example.emplyee_management.service.DepartmentService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,11 +23,9 @@ public class DepartmentController {
     }
 
     @PostMapping
-    public ResponseEntity<Department> createDepartment(@RequestBody @Valid DepartmentDTO department){
-        Department savedDepartment =  departmentService.saveDepartment(department);
-        return ResponseEntity
-                .status(201)
-                .body(savedDepartment);
+    public ResponseEntity<DepartmentResponseDTO> createDepartment(@RequestBody @Valid DepartmentDTO department){
+        DepartmentResponseDTO savedDepartment = DepartmentResponseDTO.from(departmentService.saveDepartment(department));
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedDepartment);
     }
 
 }

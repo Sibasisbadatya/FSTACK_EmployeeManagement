@@ -1,6 +1,7 @@
 package com.example.emplyee_management.service;
 
 import com.example.emplyee_management.dto.EmployeeDTO;
+import com.example.emplyee_management.dto.EmployeeResponseDTO;
 import com.example.emplyee_management.entity.Department;
 import com.example.emplyee_management.entity.Employee;
 import com.example.emplyee_management.repository.DepartmentRepository;
@@ -46,7 +47,7 @@ public class EmployeeService {
                         SseEmitter
                                 .event()
                                 .name("new-employee")
-                                .data(employee));
+                                .data(EmployeeResponseDTO.from(employee)));
             } catch (Exception e) {
                 emitters.remove(emitter);
                 throw new RuntimeException(e);

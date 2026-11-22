@@ -42,16 +42,14 @@ public class AuthController {
     public LoginResponseDTO refresh(
             @RequestBody RefreshRequest request) {
 
-        return authService.refresh(
-                request.getRefreshToken()
-        );
+        return authService.refresh(request.getRefreshToken());
     }
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(
+    public ResponseEntity<Boolean> logout(
             @RequestBody RefreshRequest request) {
 
         authService.logout(request.getRefreshToken());
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(true);
     }
 }
