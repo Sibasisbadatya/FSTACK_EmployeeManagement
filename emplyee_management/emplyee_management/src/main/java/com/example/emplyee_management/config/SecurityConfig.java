@@ -76,7 +76,8 @@ public class SecurityConfig {
                                         "/employee/addEmployee",
                                         "/auth/login",
                                         "/auth/refresh",
-                                        "/auth/logout"
+                                        "/auth/logout",
+                                        "/api/**"
                                 ).permitAll()
                                 .anyRequest().authenticated()
                 )

@@ -18,8 +18,8 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<GlobalResponseDTO<Map<String, String>>> handleMethodArguementException(MethodArgumentNotValidException ex) {
-        log.info("Error in Controller {}", ex.getMessage());
+    public ResponseEntity<GlobalResponseDTO<Map<String, String>>> handleMethodArgumentException(MethodArgumentNotValidException ex) {
+        log.info("Validation error in Controller: {}", ex.getMessage());
         Map<String, String> fieldError = new HashMap<>();
         ex.getBindingResult()
                 .getFieldErrors()
@@ -31,15 +31,44 @@ public class GlobalExceptionHandler {
                 .body(GlobalResponseDTO.of(HttpStatus.BAD_REQUEST, "Validation failed", fieldError));
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<GlobalResponseDTO<Void>> handleNotFound(ResourceNotFoundException ex) {
+        log.warn("Resource not found: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(GlobalResponseDTO.of(HttpStatus.NOT_FOUND, ex.getMessage(), null));
+    }
+
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<GlobalResponseDTO<Void>> handleInsufficientStock(InsufficientStockException ex) {
+        log.warn("Insufficient stock error: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(GlobalResponseDTO.of(HttpStatus.CONFLICT, ex.getMessage(), null));
+    }
+
+    @ExceptionHandler(InvalidOrderStateException.class)
+    public ResponseEntity<GlobalResponseDTO<Void>> handleInvalidOrderState(InvalidOrderStateException ex) {
+        log.warn("Invalid order state transition: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(GlobalResponseDTO.of(HttpStatus.BAD_REQUEST, ex.getMessage(), null));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<GlobalResponseDTO<Void>> handleIllegalArgument(IllegalArgumentException ex) {
+        log.warn("Illegal argument: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(GlobalResponseDTO.of(HttpStatus.BAD_REQUEST, ex.getMessage(), null));
+    }
+
     @ExceptionHandler({
             ObjectOptimisticLockingFailureException.class,
             OptimisticLockingFailureException.class
     })
     public ResponseEntity<GlobalResponseDTO<Void>> handleOptimisticLock(Exception ex) {
+        log.warn("Optimistic locking failure: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(GlobalResponseDTO.of(
                         HttpStatus.CONFLICT,
-                        "Employee was modified by another user. Please refresh and try again.",
+                        "Resource was modified by another transaction concurrently. Please refresh and retry.",
                         null
                 ));
     }
